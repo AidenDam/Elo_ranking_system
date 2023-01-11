@@ -1,32 +1,32 @@
 import numpy as np
 from typing import Union, List, Callable
 
-from .config import *
+from .params import *
 from .score_functions import exponential_score_function, expected_scores_function
 
 class Elo:
     def __init__(
         self,
-        k_value: float = DEFAULT_K_VALUE,
         d_value: float = DEFAULT_D_VALUE,
         score_function_base: float = DEFAULT_SCORING_FUNCTION_BASE,
+        custom_k_value_function: Callable = None,
         custom_score_function: Callable = None,
         log_base: int = LOG_BASE
     ):
         """
-        :param k_value: K parameter in Elo algorithm that determines how much ratings increase or decrease
-        after each match
         :param d_value: D parameter in Elo algorithm that determines how much Elo difference affects win
         probability
         :param score_function_base: base value to use for scoring function; scores are approximately
         multiplied by this value as you improve from one place to the next (minimum allowed value is 1,
         which results in a linear scoring function)
+        :param custom_k_value_function: a function that takes K value in Elo algorithm that determines 
+        how much ratings increase or decrease after each match
         :param custom_score_function: a function that takes an integer input and returns a numpy array
         of monotonically decreasing values summing to 1
         :param log_base: base to use for logarithms throughout the Elo algorithm. Traditionally Elo
         uses base-10 logs
         """
-        self.k = k_value
+        self.get_k_value = custom_k_value_function or get_k_value
         self._expected_score_func = expected_scores_function(d_value, log_base)
         self._actual_score_func = custom_score_function or exponential_score_function(alpha=score_function_base)
 
@@ -60,8 +60,10 @@ class Elo:
         n = len(initial_ratings)  # number of players
         actual_scores = self.get_actual_scores(n, result_order)
         expected_scores = self.get_expected_scores(initial_ratings)
-        scale_factor = self.k * (n - 1) 
-        return initial_ratings + scale_factor * (actual_scores - expected_scores)
+        scale_factor = np.array(list(map(self.get_k_value, initial_ratings))) * (n - 1)
+        ratings = initial_ratings + scale_factor * (actual_scores - expected_scores)
+        # if rating < 0 change the rating = 0
+        return np.maximum(ratings, 0)
 
     def get_actual_scores(self, n: int, result_order: List[int] = None) -> np.ndarray:
         """
