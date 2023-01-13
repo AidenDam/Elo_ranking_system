@@ -19,4 +19,4 @@ def get_k_value(x: float) -> float:
         i = 5
     else:
         i = 6
-    return ks[-i if x < 0 else i]
+    return ks[-i if x <= 0 else i]
