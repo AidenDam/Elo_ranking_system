@@ -1,4 +1,4 @@
-# Elo ranking system
+# Elo rating system
 
 You can see [my notebook](https://daodam.notion.site/Elo-rating-system-f90306cbd83e4ab29c5b0d0319a3c791) about Elo rating system.
 
