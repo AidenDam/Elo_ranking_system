@@ -14,8 +14,8 @@ elo = Elo()
 
 @app.post('/get_new_ratings')
 def get_new_ratings():
-    rating = request.json['rating']
-    order = request.json['order']
+    rating = request.json['ratings']
+    order = request.json['orders']
 
     return jsonify({'ratings': elo.get_new_ratings(rating, order).tolist()})
 
