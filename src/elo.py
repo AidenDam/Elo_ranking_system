@@ -60,7 +60,7 @@ class Elo:
         n = len(initial_ratings)  # number of players
         actual_scores = self.get_actual_scores(n, result_order)
         expected_scores = self.get_expected_scores(initial_ratings)
-        scale_factor = np.array(list(map(self.get_k_value, initial_ratings))) * (n - 1)
+        scale_factor = np.vectorize(self.get_k_value)(np.where(actual_scores - expected_scores >= 0, -initial_ratings, initial_ratings)) * (n - 1)
         ratings = initial_ratings + scale_factor * (actual_scores - expected_scores)
         # if rating < 0 change the rating = 0
         return np.maximum(ratings, 0)
