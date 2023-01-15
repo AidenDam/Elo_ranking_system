@@ -11,6 +11,3 @@ python flask_api.py
 ## Api
 
 ![imgae](img/api_ex.png)
-
-- ratings: list where each value indicates the current score the player.
-- orders: list where each value indicates the place the player (you can submit a empty list if order is 1 to n).
