@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+import numpy as np
+import pandas as pd
 
 import argparse
 
@@ -14,10 +16,13 @@ elo = Elo()
 
 @app.post('/get_new_ratings')
 def get_new_ratings():
-    rating = request.json['ratings']
-    order = request.json['orders']
+    students = pd.json_normalize(request.json)
 
-    return jsonify({'ratings': elo.get_new_ratings(rating, order).tolist()})
+    main_criteria_score = students[['Home_Work_Score', 'Attendance_Score', 'Rate']].sum(axis=1)
+    _, inv = np.unique(main_criteria_score, return_inverse=True)
+    new_Elo = elo.get_new_ratings(students['Elo'].values, (inv + 1)[::-1].tolist())
+
+    return jsonify({"ratings": new_Elo.tolist()})
 
 if __name__ == '__main__':
     port = args.port

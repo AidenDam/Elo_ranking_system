@@ -7,9 +7,9 @@ def get_k_value(x: float) -> float:
     x_t = abs(x)
     if x_t < 0:
         i = 0
-    elif x_t < 800:
+    elif x_t < 600:
         i = 1
-    elif x_t < 1200:
+    elif x_t < 1000:
         i = 2
     elif x_t < 1600:
         i = 3
